@@ -1,0 +1,45 @@
+extends layout
+
+block content
+  if info
+    div.row
+      div.col-md-12
+        div.alert.alert-info #{info}
+  div.row
+    div(class="col-md-8")
+      each publication in publications
+        div(class="card")
+          div.card-header 
+            a(href="forum/"+publication.slug)
+              span.card-title #{publication.title}
+          div.card-body
+            span #{truncate(htmlToText(publication.content))}
+          div.card-footer
+            ul.nav
+              li.nav-item
+                if publication.author.github
+                  <img src="https://avatars.githubusercontent.com/#{publication.author.github}" width="35" alt="" class="rounded-circle">
+                else
+                  <img src="https://avatars.githubusercontent.com/github" width="35" alt="" class="rounded-circle">
+              li.nav-item
+                span.nav-link <span class="footer__author">#{publication.author.name}</span> published #{moment(publication.createdAt).fromNow()}
+              each tag in publication.tags
+                li.nav-item.tag-item
+                  a(href="/?="+tag, class="nav-link") #{tag}
+      else
+        div.text-center
+          img(src="images/svg/message.svg", width="150")
+          br
+          br
+          h2.title-results It looks like you are lost
+          h3.title-results-message Well, I think we have not yet content here
+    div(class="col-md-4 sidebar")
+      div.form-search
+        div.form-group
+          a(href="/forum/create", class="btn btn-info btn-block btn-forum") Create thread
+      div.tags-section
+        h4 Tags
+        div.list-group.tag-list
+          a.list-group-item.list-group-item-action.active(href="/") All
+          each tag in tags
+            a.list-group-item.list-group-item-action(href="/?="+tag.name) #{tag.name}

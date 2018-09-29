@@ -1,0 +1,49 @@
+extends ../layout
+
+block content
+  div.row
+    div(class="col-md-3")
+      div.section-user.text-center
+        if publication.author.github
+          <img src="https://avatars.githubusercontent.com/#{publication.author.github}" width="120" alt="" class="rounded-circle">
+        else
+          <img src="https://avatars.githubusercontent.com/github" width="120" alt="" class="rounded-circle">
+        br
+        br
+        span #{publication.author.name}
+    div(class="col-md-9")
+      h1 #{publication.title}
+      span <span class="footer__author">#{publication.author.name}</span> published #{moment(publication.createdAt).fromNow()}
+      div(class="card mt-3 mb-3")
+        div.card-body
+          p !{publication.content}
+      each comment in comments
+        div.media
+          img(class="rounded-circle", src="https://avatars.githubusercontent.com/" + comment.author.github, width="64")
+          div.media-body
+            h6.mt-0 <span class="comment__author">#{comment.author.name}</span> published #{moment(comment.createdAt).fromNow()}
+            span !{comment.content}
+      hr
+      if user
+        div.comment
+          div.alert.alert-info Please make sure you've read our rules before replying to this thread.
+          if errors
+            div.alert.alert-danger <strong>Whoops...</strong> looks like something went wrong:
+              ul
+                each error in errors
+                  li #{error}
+          form(method="POST", action="/comment")
+            input(class="d-none", type="text", name="slug", value=publication.slug)
+            div.form-group
+              div(id="editor", class="form-control")
+              textarea(id="textarea-content", name="content", class="d-none form-control")
+            div.form-group
+              button(class="btn btn-secondary") Reply
+      else
+        div.comment.text-center
+          span <a href="/signin">Sign in</a> to participate in this thread!
+block scripts
+  script(src="https://cdn.quilljs.com/1.3.6/quill.js")
+  script(src="https://cdnjs.cloudflare.com/ajax/libs/slim-select/1.17.0/slimselect.min.js")
+  if user
+    script(src="/javascripts/publication.js")
